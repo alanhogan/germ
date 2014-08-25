@@ -154,7 +154,7 @@ app.prototype.onRenderRootComponent = function(message) {
           ((message.meta && message.meta.title) ? '  <title>' + message.meta.title + '</title>' : '') +
           '<meta name="description" content="">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1">'+
-          '<script src="/js/polyfill.js"></script>'+
+          '<script src="//polyfill.io"></script>'+
           '<script src="/js/demo-assets.js"></script>'+
         '</head>'+
         '<body>'+

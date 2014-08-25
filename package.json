@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node bin/germ.js",
+    "start": "bin/germ -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Demetrius Johnson",
@@ -25,11 +25,11 @@
     "morgan": "^1.2.3",
     "ms": "^0.6.2",
     "nconf": "^0.6.9",
-    "polyfill-middleware": "0.0.0",
     "react": "^0.11.1",
     "react-addons": "^0.9.0",
     "react-intl": "^1.0.0-rc-1",
     "serve-favicon": "^2.0.1",
+    "source-map-support": "^0.2.7",
     "spdy": "^1.28.1",
     "superagent": "^0.18.2",
     "winston": "^0.7.3",

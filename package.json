@@ -8,6 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "start": "node bin/germ.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Demetrius Johnson",

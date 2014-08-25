@@ -1,0 +1,153 @@
+var crossroads = require('crossroads')
+  , react = require('react')
+  , bacon = require('baconjs')
+  , server404 = require('./page/404.jsx')
+  , layout = require('./template/layout.jsx');
+
+var routes = crossroads.create();
+routes.bypassed.add(function(metaData, renderFn) {
+  renderFn(server404(), {status:404});
+});
+
+/*
+ * Helper function to load all the app's components asynchronous
+ * letting for additional setup like database connects etc.
+ */
+function loadAppsPageAndComponents(next) {
+  require('./page/watch.jsx')(routes, next);
+}
+
+/**
+ * RIA (Rich Internet application)
+ * Main entry point for the application. Handle both the client and server bootstrapping.
+ */
+if(CLIENT_ENV) {
+  var appLayout;
+  // wire up the HTML5 history to our routes and on change
+  window.History.Adapter.bind(window, "statechange", function() {
+    // TODO parse document.location.search into metaData
+    routes.parse(document.location.pathname, [{layout:appLayout}, function(component, meta) {
+      if(!meta) meta = {};
+      if(component) {
+        appLayout = react.renderComponent(layout({body:component, meta:meta}), meta.target || document.body);
+
+        window.appLayout = appLayout; // for testing
+      }
+    }]);
+  });
+
+  // load all the components
+  loadAppsPageAndComponents(function(err) {
+    if(err) console.error('Error loading component:', err.message||err);
+  });
+} else {
+  // on the server always trigger routes
+  routes.ignoreState = true;
+
+  // in server mode render the full version that includes the headers,
+  // body, and html needed to bootstrap the Ract client version.
+  module.exports = function(server, next) {
+
+    server.use(function(req, res, next) {
+      routes.parse(req.path, [{req:req, res:res, next:next}, function(component, meta) {
+        if(!meta) meta = {};
+
+        if(component) {
+          var markup = react.renderComponentToString(layout({body:component, meta:meta}));
+          var headOffset = markup.indexOf('>');
+
+          // workaround because react does not support doctype or <!-- -->
+          res.status(meta.status || 200);
+          res.end(
+            '<!DOCTYPE html ' + markup.substring(6, headOffset) +
+            '>\n<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->'+
+            '<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->'+
+            '<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->'+
+            '<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->'+
+            markup.substring(headOffset+1)
+          );
+        } else {
+          res.send(500);
+        }
+      }]);
+    });
+
+    // load all the components
+    // before starting the server
+    loadAppsPageAndComponents(next);
+  }
+}
+
+function app() {
+  this.eventChannel = new bacon.Bus();
+  this.routeChannel = new bacon.Bus();
+  this.renderChannel = new bacon.Bus();
+
+  // bootstrap the root component in the client environment
+  if(CLIENT_ENV) {
+    this.rootComponent = false;
+  }
+
+  // handle the root component renders. We needed to support both the server and client bootstrap logic
+  renderChannel.filter(function(val) {return !val.target;}).onValue(this.onRenderRootComponent); //.bind(this) for client side
+}
+
+/**
+ * Que a render of a component
+ *
+ * @param component
+ * @param meta
+ * @param target
+ * @param res
+ */
+app.prototype.renderComponent = function(component, meta, target, res) {
+  this.renderChannel.push({
+    component: component,
+    meta: meta,
+    target: target,
+    res: res
+  });
+}
+
+/**
+ * render root component on in server and client environments
+ *
+ * @param message
+ */
+app.prototype.onRenderRootComponent = function(message) {
+
+  if(CLIENT_ENV) {
+    appLayout = react.renderComponent(layout({body:message.component, meta:message.meta}), (message.meta && message.meta.target) || document.body);
+    window.appLayout = appLayout; // testing
+  } else if(message.res) {
+    // ignore if non server event
+    if(message.component) {
+      var markup = react.renderComponentToString(layout({body:message.component, meta:message.meta}));
+      var headOffset = markup.indexOf('>');
+
+      // workaround because react does not support doctype or <!-- -->
+      message.res.status(message.meta.status || 200);
+      message.res.end(
+        '<!DOCTYPE html ' + markup.substring(6, headOffset) +
+        '>\n<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->'+
+        '<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->'+
+        '<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->'+
+        '<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->'+
+        markup.substring(headOffset+1)
+      );
+    } else {
+      message.res.send(500);
+    }
+  } else {
+    console.error('Ignored renderRootComponent because not res object', message, CLIENT_ENV ? 'on client':'on server');
+  }
+}
+
+/**
+ * expressjs middleware to handle all requests
+ */
+app.prototype.middleware = function(req, res, next) {
+
+}
+
+module.exports = new app();

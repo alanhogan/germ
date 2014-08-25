@@ -1,0 +1,56 @@
+{
+  "stackTrace": {
+    "includeSystemInfo": true
+  },
+
+  "winston" :{
+    "containers": {
+      "console": {
+        "console": {
+          "level": "silly",
+          "colorize": true,
+          "label": "burp",
+          "timestamp": true
+        },
+        "file": {
+          "level": "silly",
+          "colorize": false,
+          "filename": "/tmp/winston.log",
+          "timestamp": true,
+          "_maxsize": 1000,
+          "_maxFiles": 5,
+          "json": false
+        }
+      },
+      "alert": {
+        "mail": {
+          "level": "silly",
+          "to": "someone@domain.com",
+          "from": "someone@domain.com",
+          "host": "smtp.gmail.com",
+          "port": 465,
+          "ssl": true,
+          "tls": false,
+          "subject": "Burp Alert Email",
+          "username": "someone@domain.com",
+          "password": "---------------"
+        },
+        "console": {
+          "level": "silly",
+          "colorize": true,
+          "label": "alert",
+          "timestamp": true
+        },
+        "file": {
+          "level": "silly",
+          "colorize": false,
+          "filename": "/tmp/alert.log",
+          "timestamp": true,
+          "_maxsize": 1000,
+          "_maxFiles": 5,
+          "json": false
+        }
+      }
+    }
+  }
+}

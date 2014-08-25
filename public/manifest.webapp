@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "name": "germ",
+  "launch_path": "/index.html",
+  "description": "A front-end template for modern mobile web apps.",
+  "icons": {
+    "128": "/images/apple-touch-icon.png"
+  },
+  "developer": {
+    "name": "",
+    "url": ""
+  },
+  "installs_allowed_from": [
+    "*"
+  ],
+  "default_locale": "en",
+  "permissions": {
+  },
+  "locales": {
+    "en": {
+      "name": "germ",
+      "description": "A front-end template for modern mobile web apps."
+    }
+  }
+}

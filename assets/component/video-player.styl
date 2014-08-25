@@ -1,0 +1,71 @@
+
+draw-width = 240px
+video-component-height = 540px
+video-component-draw-height = 440px
+
+.video-component
+  background-color #000
+
+  .hero-image
+    background-size 100%
+    background-position center
+    background-repeat repeat-y
+
+  .sub-nav
+
+  .share
+    float: right
+
+  .player
+    color: white
+    margin 0 auto
+    width: center-max-width
+    height: video-component-height
+
+    .wrapper
+      position: absolute
+      height: video-component-height
+      width: center-max-width
+      overflow: hidden
+
+    .side-bar
+      position: absolute
+      right: 0
+      width: draw-width
+      background-color black
+      display: none
+      height: 100%
+
+    .side-bar-button
+      cursor: pointer
+      z-index: 10
+      position: absolute
+      right: 10px
+      top: 20px
+      background-color black
+      a
+        color: white
+        width: 140px
+        text-align: center
+        padding:10px
+        background-color: black;
+        border:solid 3px white;
+      a:hover
+        color: light-blue
+    ul
+
+      li
+
+  .youtube-player
+    width: center-max-width
+    height: 100%
+
+  .player.drawer-open
+    height: video-component-draw-height
+    .wrapper
+      height: video-component-draw-height
+    .side-bar
+      display: block
+      height: video-component-draw-height
+    .youtube-player
+      width: center-max-width - draw-width
